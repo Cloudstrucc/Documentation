@@ -1,0 +1,39 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+name: $(BuildDefinitionName)-$(Date:yyyyMMdd).$(Rev:.r)
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+
+- task: RunPanDoc@1
+  inputs:
+    sourceFile: '$(Build.SourcesDirectory)/Translate/Source/$(FileName).docx'
+    inputFormat: 'docx'
+    outputFormat: 'markdown'
+    destFile: '$(Build.SourcesDirectory)/Translate/Destination/$(FileName).md'
+
+- task: CmdLine@2      
+  inputs:
+        script: |
+          echo commit all changes
+          git config --global user.email "dbouzid@cloudstrucc.com"
+          git config --global user.name "Djamila Bouzid"
+          git checkout main
+          git add .
+          git commit -m "[skip ci] Solution CI Commit"
+          echo push code to new repo
+          git push https://cuzgjimyvrv4vwleow4fayws4botqppfdnfehsmmydrnefsyuzmq@dev.azure.com/cloudstrucc/Documentation/_git/Documentation
+- script: echo END SOLUTION TRANSFER (SUCCESS)
+  displayName: 'Successfully Transferred your solution(s)'
